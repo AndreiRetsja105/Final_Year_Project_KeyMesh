@@ -1,0 +1,127 @@
+name: keymesh
+
+x-hardening: &hardening
+  read_only: true
+  tmpfs: [/tmp]
+  cap_drop: [ALL]
+  security_opt: ["no-new-privileges:true"]
+  restart: unless-stopped
+
+x-key-service: &key-service
+  <<: *hardening
+  build: {context: ., dockerfile: services/Dockerfile, args: {SERVICE: key_service}}
+  image: keymesh/key_service:dev
+  networks: [keys]
+
+services:
+  api_gateway:
+    <<: *hardening
+    build: {context: ., dockerfile: services/Dockerfile, args: {SERVICE: api_gateway}}
+    ports: ["8443:8000"]          # the ONLY published port (TLS added in WP5)
+    networks: [public, internal]
+
+  auth_service:
+    <<: *hardening
+    build: {context: ., dockerfile: services/Dockerfile, args: {SERVICE: auth_service}}
+    env_file: .env
+    networks: [internal, db]
+    depends_on: [postgres]
+
+  data_service:
+    <<: *hardening
+    build: {context: ., dockerfile: services/Dockerfile, args: {SERVICE: data_service}}
+    env_file: .env
+    networks: [internal, db]
+    depends_on: [postgres]
+
+  crypto_service:
+    <<: *hardening
+    build: {context: ., dockerfile: services/Dockerfile, args: {SERVICE: crypto_service}}
+    networks: [internal, keys]    # only service that can reach the key services
+
+  key-service-1:
+    <<: *key-service
+    environment:
+      KEY_SERVICE_INDEX: "1"
+      SHARE_FILE: /run/secrets/key_share
+      TICKET_PUBLIC_KEY_PEM: ${TICKET_PUBLIC_KEY_PEM:-}
+    volumes:
+      - ./secrets/shares/share_1.txt:/run/secrets/key_share:ro
+
+  key-service-2:
+    <<: *key-service
+    environment:
+      KEY_SERVICE_INDEX: "2"
+      SHARE_FILE: /run/secrets/key_share
+      TICKET_PUBLIC_KEY_PEM: ${TICKET_PUBLIC_KEY_PEM:-}
+    volumes:
+      - ./secrets/shares/share_2.txt:/run/secrets/key_share:ro
+
+  key-service-3:
+    <<: *key-service
+    environment:
+      KEY_SERVICE_INDEX: "3"
+      SHARE_FILE: /run/secrets/key_share
+      TICKET_PUBLIC_KEY_PEM: ${TICKET_PUBLIC_KEY_PEM:-}
+    volumes:
+      - ./secrets/shares/share_3.txt:/run/secrets/key_share:ro
+
+  key-service-4:
+    <<: *key-service
+    environment:
+      KEY_SERVICE_INDEX: "4"
+      SHARE_FILE: /run/secrets/key_share
+      TICKET_PUBLIC_KEY_PEM: ${TICKET_PUBLIC_KEY_PEM:-}
+    volumes:
+      - ./secrets/shares/share_4.txt:/run/secrets/key_share:ro
+
+  key-service-5:
+    <<: *key-service
+    environment:
+      KEY_SERVICE_INDEX: "5"
+      SHARE_FILE: /run/secrets/key_share
+      TICKET_PUBLIC_KEY_PEM: ${TICKET_PUBLIC_KEY_PEM:-}
+    volumes:
+      - ./secrets/shares/share_5.txt:/run/secrets/key_share:ro
+
+  key-service-6:
+    <<: *key-service
+    environment:
+      KEY_SERVICE_INDEX: "6"
+      SHARE_FILE: /run/secrets/key_share
+      TICKET_PUBLIC_KEY_PEM: ${TICKET_PUBLIC_KEY_PEM:-}
+    volumes:
+      - ./secrets/shares/share_6.txt:/run/secrets/key_share:ro
+
+  key-service-7:
+    <<: *key-service
+    environment:
+      KEY_SERVICE_INDEX: "7"
+      SHARE_FILE: /run/secrets/key_share
+      TICKET_PUBLIC_KEY_PEM: ${TICKET_PUBLIC_KEY_PEM:-}
+    volumes:
+      - ./secrets/shares/share_7.txt:/run/secrets/key_share:ro
+
+  key-service-8:
+    <<: *key-service
+    environment:
+      KEY_SERVICE_INDEX: "8"
+      SHARE_FILE: /run/secrets/key_share
+      TICKET_PUBLIC_KEY_PEM: ${TICKET_PUBLIC_KEY_PEM:-}
+    volumes:
+      - ./secrets/shares/share_8.txt:/run/secrets/key_share:ro
+
+  postgres:
+    image: postgres:16-alpine
+    env_file: .env
+    volumes: [pgdata:/var/lib/postgresql/data]
+    networks: [db]
+
+networks:
+  public: {}
+  internal: {internal: true}
+  keys: {internal: true}
+  db: {internal: true}
+
+volumes:
+  pgdata: {}
