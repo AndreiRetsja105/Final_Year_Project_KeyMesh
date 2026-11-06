@@ -22,7 +22,7 @@ services:
 
   auth_service:
     <<: *hardening
-    build: {context: ., dockerfile: services/Dockerfile, args: {SERVICE: auth_service}}
+    build: {context: ., dockerfile: services/Dockerfile, args: {SERVICE: authentication_service}}
     env_file: .env
     networks: [internal, db]
     depends_on: [postgres]

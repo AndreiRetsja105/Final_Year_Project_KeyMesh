@@ -19,8 +19,7 @@ COPY libs/keymesh_common /tmp/keymesh_common
 COPY services/requirements.txt .
 
 # Install project dependencies and the shared KeyMesh library
-RUN pip install --no-cache-dir -r requirements.txt /tmp/keymesh_common && rm -rf / tmp/keymesh_common
-
+RUN pip install --no-cache-dir -r requirements.txt /tmp/keymesh_common && rm -rf /tmp/keymesh_common
 # Copy only the selected service into the container
 COPY services/${SERVICE}/app ./app
 
