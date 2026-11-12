@@ -1,0 +1,22 @@
+# Python
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+
+# Packaging artefacts (generated, must not be committed)
+build/
+dist/
+*.egg-info/
+
+# Secrets: will never commit these (key shares, signing keys, passwords)
+.env
+secrets/
+
+# Local data and editor files
+pgdata/
+.vscode/
+.idea/
+.DS_Store
+
