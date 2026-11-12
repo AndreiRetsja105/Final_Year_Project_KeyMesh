@@ -1,6 +1,7 @@
 """test for a provisioned key services: share file present and a ticket verified configuration"""
 
-"""the smoke test only check the not provisioned case 503. this test check the success path, so a service that silently fails to load its share is cough  """
+"""the smoke test only check the not provisioned case 503. 
+this test check the success path, so a service that silently fails to load its share is cough  """
 
 import base64
 import importlib.util
